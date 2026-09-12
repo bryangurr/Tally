@@ -5,6 +5,7 @@ import Home from './Home.jsx';
 import Setup from './Setup.jsx';
 import Game from './Game.jsx';
 import './styles.css';
+import { parseTimerDuration } from './timer.js';
 import { changeScore, advanceRound } from './scoring.js';
 
 const modes = [
@@ -23,18 +24,20 @@ function App() {
   const [limit, setLimit] = useState(5);
   const [names, setNames] = useState(['Player 1', 'Player 2']);
   const [timed, setTimed] = useState(false);
-  const [minutes, setMinutes] = useState(10);
+  const [minutes, setMinutes] = useState(5);
+  const [timerSeconds, setTimerSeconds] = useState(0);
   const [step, setStep] = useState(1);
   const [history, setHistory] = useState([]);
   const [notice, setNotice] = useState('');
   const selected = modes.find(m => m.id === mode);
   useEffect(() => { try { if (game) localStorage.setItem('tally-game', JSON.stringify(game)); } catch { /* Gameplay remains available if storage is disabled. */ } }, [game]);
-  useEffect(() => { if (screen !== 'game' || !game?.running || game?.finished || game.seconds <= 0) return; const id = setInterval(() => setGame(g => ({ ...g, seconds: Math.max(0, g.seconds - 1), running: g.seconds > 1 })), 1000); return () => clearInterval(id); }, [screen, game?.running, game?.finished, game?.seconds <= 0]);
+  useEffect(() => { if (screen !== 'game' || !game?.running || game?.finished || game.seconds <= 0) return; const id = setInterval(() => setGame(g => ({ ...g, seconds: Math.max(0, g.seconds - 1), running: g.seconds > 1 })), 1000); return () => clearInterval(id); }, [screen, game?.running, game?.finished, game?.seconds <= 0, game?.timerRevision]);
   useEffect(() => { window.scrollTo(0, 0); }, [screen]);
   useEffect(() => { if (!notice) return; const id = setTimeout(() => setNotice(''), 3500); return () => clearTimeout(id); }, [notice]);
   function startGame() {
-    if (!Number.isInteger(Number(limit)) || Number(limit) < 1 || Number(limit) > 9999 || (timed && (!Number.isInteger(Number(minutes)) || Number(minutes) < 1 || Number(minutes) > 180))) { setNotice('Enter a valid goal and a timer between 1 and 180 minutes.'); return; }
-    setGame({ mode, limit: Number(limit), players: names.map((name, i) => ({ name: name.trim() || `Player ${i + 1}`, score: mode === 'life' ? Number(limit) : 0 })), round: 1, timed, seconds: Number(minutes) * 60, running: timed, finished: false }); setHistory([]); setStep(1); setScreen('game');
+    const duration = parseTimerDuration(minutes, timerSeconds);
+    if (!Number.isInteger(Number(limit)) || Number(limit) < 1 || Number(limit) > 9999 || (timed && duration === null)) { setNotice('Enter a valid goal and a timer between 0:01 and 180:00 (seconds must be 0–59).'); return; }
+    setGame({ mode, limit: Number(limit), players: names.map((name, i) => ({ name: name.trim() || `Player ${i + 1}`, score: mode === 'life' ? Number(limit) : 0 })), round: 1, timed, timerDuration: duration, seconds: duration ?? 0, running: timed, finished: false }); setHistory([]); setStep(1); setScreen('game');
   }
   function updateScore(index, amount) {
     if (game.finished) return;
@@ -50,7 +53,7 @@ function App() {
     <header className="site-header"><Brand onClick={() => setScreen('home')} /><button className={`home-button ${screen === 'home' ? 'is-home' : ''}`} aria-label="Go to home" onClick={() => setScreen('home')}><House size={19}/><span>Home</span></button></header>
     <main>
       {screen === 'home' && <Home game={game} setScreen={setScreen}/>}
-      {screen === 'setup' && <Setup modes={modes} colors={colors} mode={mode} setMode={setMode} limit={limit} setLimit={setLimit} names={names} setNames={setNames} timed={timed} setTimed={setTimed} minutes={minutes} setMinutes={setMinutes} selected={selected} setScreen={setScreen} startGame={startGame}/>}
+      {screen === 'setup' && <Setup modes={modes} colors={colors} mode={mode} setMode={setMode} limit={limit} setLimit={setLimit} names={names} setNames={setNames} timed={timed} setTimed={setTimed} minutes={minutes} setMinutes={setMinutes} timerSeconds={timerSeconds} setTimerSeconds={setTimerSeconds} selected={selected} setScreen={setScreen} startGame={startGame}/>}
       {screen === 'game' && game && <Game colors={colors} game={game} setGame={setGame} currentMode={currentMode} topScore={topScore} winners={winners} step={step} setStep={setStep} history={history} setScreen={setScreen} updateScore={updateScore} nextRound={nextRound} undo={undo}/>}
     </main>
     {notice && <div className="toast" role="alert">{notice}<button aria-label="Dismiss notification" onClick={() => setNotice('')}><X size={16}/></button></div>}

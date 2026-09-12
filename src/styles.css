@@ -125,3 +125,23 @@ main { flex: 1; }
   .home-screen .ways-grid { margin-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation: none !important; transition: none !important; } }
+
+.timer-panel { max-width: 100%; flex-shrink: 0; }
+.timer-panel .timer-display { flex-wrap: wrap; gap: 8px; }
+.timer-panel .timer-display button { min-width: 32px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
+.timer-adjustment { margin-top: 10px; padding: 12px; background: #f5f6f1; border-radius: 9px; font-size: 12px; }
+.timer-adjustment label { display: block; margin-bottom: 9px; }
+.timer-adjustment-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.timer-adjustment input { width: 70px; min-width: 0; background: white; border: 1px solid #dce1d6; border-radius: 6px; padding: 8px; }
+.timer-adjustment button { border: 1px solid #dce1d6; border-radius: 6px; padding: 8px; background: transparent; }
+.timer-adjustment button[type="submit"] { background: #e7f477; }
+.timer-adjustment p { max-width: 240px; margin-top: 8px; }
+
+.timer-adjustment-label { margin-bottom: 10px; }
+.timer-adjustment-row { align-items: flex-end; }
+.timer-adjustment-row label { margin: 0; }
+.timer-adjustment-row input { display: block; margin-top: 5px; }
+
+.setup-timer-duration { justify-content: flex-end; gap: 20px; }
+.setup-timer-duration label { display: inline-flex; align-items: center; gap: 8px; }
+.setup-timer-duration input { width: 64px; }

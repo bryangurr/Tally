@@ -47,13 +47,12 @@ function App() {
   const topScore = game ? Math.max(...game.players.map(p => p.score)) : 0;
   const winners = game?.players.filter(p => p.score === topScore);
   return <div className="app-shell">
-    <header className="site-header"><Brand onClick={() => setScreen('home')} /><div className="header-note"><span className="status-dot"/> MADE FOR GAME NIGHT</div><button className={`home-button ${screen === 'home' ? 'is-home' : ''}`} aria-label="Go to home" onClick={() => setScreen('home')}><House size={19}/><span>Home</span></button></header>
+    <header className="site-header"><Brand onClick={() => setScreen('home')} /><button className={`home-button ${screen === 'home' ? 'is-home' : ''}`} aria-label="Go to home" onClick={() => setScreen('home')}><House size={19}/><span>Home</span></button></header>
     <main>
-      {screen === 'home' && <Home modes={modes} game={game} setScreen={setScreen}/>}
+      {screen === 'home' && <Home game={game} setScreen={setScreen}/>}
       {screen === 'setup' && <Setup modes={modes} colors={colors} mode={mode} setMode={setMode} limit={limit} setLimit={setLimit} names={names} setNames={setNames} timed={timed} setTimed={setTimed} minutes={minutes} setMinutes={setMinutes} selected={selected} setScreen={setScreen} startGame={startGame}/>}
       {screen === 'game' && game && <Game colors={colors} game={game} setGame={setGame} currentMode={currentMode} topScore={topScore} winners={winners} step={step} setStep={setStep} history={history} setScreen={setScreen} updateScore={updateScore} nextRound={nextRound} undo={undo}/>}
     </main>
-    <footer className="site-footer"><span>STAY IN THE GAME.</span><span>Made for the moments around the table.<span className="footer-star">✳</span></span></footer>
     {notice && <div className="toast" role="alert">{notice}<button aria-label="Dismiss notification" onClick={() => setNotice('')}><X size={16}/></button></div>}
   </div>;
 }
